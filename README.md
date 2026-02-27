@@ -10,7 +10,7 @@ This report documents the threat modeling and secure architecture design for a U
 
 ---
 
-## Task 1. System Definition and Initial Architecture
+## 1. System Definition and Initial Architecture
 
 The University Management System is designed with a service-oriented architecture to securely route and process distinct operational domains.
 
@@ -25,7 +25,7 @@ The University Management System is designed with a service-oriented architectur
 
 ---
 
-## Task 2. Asset Identification and Security Objectives
+## 2. Asset Identification and Security Objectives
 
 ### 2.1 Asset Inventory Table
 
@@ -57,7 +57,7 @@ The University Management System is designed with a service-oriented architectur
 
 ---
 
-## Task 3. Threat Modeling (MTMT Output Analysis)
+## 3. Threat Modeling (MTMT Output Analysis)
 
 The following high-priority threats were identified crossing the system's initial trust boundaries using the STRIDE framework:
 
@@ -79,7 +79,7 @@ The following high-priority threats were identified crossing the system's initia
 
 ---
 
-## Task 4. Secure Architecture Design
+## 4. Secure Architecture Design
 
 ### 4.1 Implemented Security Controls
 
@@ -107,7 +107,7 @@ Based on the controls defined above, the initial architecture was updated to ref
 
 ---
 
-## Task 5. Risk Treatment and Residual Risk
+## 5. Risk Treatment and Residual Risk
 
 | STRIDE Threat | Treatment Strategy | Justification & Applied Control | Residual Risk Description | Residual Risk Level |
 | :--- | :--- | :--- | :--- | :--- |
@@ -120,3 +120,19 @@ Based on the controls defined above, the initial architecture was updated to ref
 | **Information Disclosure** (Verbose Error Messages) | Accept / Mitigate | Most risk is mitigated via generic error handling. The remaining risk is Accepted as low impact. | Developers troubleshooting the live system might temporarily enable "debug mode" and forget to turn it off, accidentally leaking data. | Very Low |
 | **Repudiation** (Lack of Audit Logging) | Mitigate | Centralized audit logging is implemented for all critical actions (grades, fees, logins). | The dedicated logging database could run out of storage space or crash, causing events to be dropped before they are recorded. | Low |
 | **Denial of Service** (API Exhaustion) | Mitigate | A Web Application Firewall (WAF) enforces rate limiting on all incoming requests. | A massive, highly distributed botnet attack could still generate enough traffic to overwhelm the WAF's processing capacity. | Medium |
+
+## 6. Assumptions and Limitations
+
+To properly scope the threat model and architecture design, the following assumptions and limitations have been established:
+
+**Assumptions:**
+1. **Infrastructure & Storage Security:** It is assumed that the underlying physical infrastructure, hypervisors, storage servers (for CVs/Profiles), and database servers are securely maintained, patched, and physically protected by a trusted Cloud Service Provider (CSP) under a shared responsibility model.
+2. **Federated Identity (Google OAuth):** The system relies on Google OAuth for authentication. It is assumed that Google's OAuth 2.0 service remains secure, highly available, and that the cryptographic tokens provided by Google are structurally sound and not compromised at the source.
+3. **Default Cryptographic Standards:** It is assumed that the CSP enforces modern baseline encryption standards. This includes AES-256 for all data at rest within the databases and file storage, and TLS 1.2 or higher for all data in transit across the network.
+4. **Trusted Admins:** It is assumed that the top-level administrators responsible for configuring the initial Role-Based Access Control (RBAC) matrix are vetted and trusted.
+5. **Secret Management:** Cryptographic keys, database passwords, and JWT signing secrets are assumed to be stored securely in a dedicated Key Management Service (KMS), not hardcoded into the application source code.
+
+**Limitations (Out of Scope):**
+1. **Physical Threats:** This threat model focuses strictly on logical application security, network boundaries, and data flows. Physical security threats (e.g., tailgating into a server room or stealing a hard drive) are completely out of scope.
+2. **Social Engineering & Phishing:** While recognized as high-risk, client-side human vulnerabilities such as students falling for phishing emails or faculty installing malware on their personal devices are beyond the scope of this architectural mitigation plan.
+3. **Third-Party Black Boxes:** The internal architecture of the external 3rd-Party Payment Gateway is treated as a trusted black box. The model relies entirely on their external PCI-DSS certification and 3D Secure implementation, rather than modeling their internal data flows.
