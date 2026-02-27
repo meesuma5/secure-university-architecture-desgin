@@ -1,5 +1,5 @@
 # Secure Architecture and Design Report
-**Project Scenario:** Option D - University Management System
+**Project Scenario:** University Management System
 
 **Prepared by:** Meesum Abbas  
 
